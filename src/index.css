@@ -463,6 +463,60 @@ body {
   margin-top: 5px;
 }
 
+.detail-heading-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* Untuk membuat tanggal dan tombol bookmark sejajar di story item */
+.story-meta-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: none;
+}
+
+.story-meta {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  flex-grow: 1;
+}
+
+/* Style untuk tombol bookmark */
+.bookmark-btn {
+  font-size: 1.5rem;
+  padding: 5px;
+  border-radius: 50%;
+  line-height: 1;
+  width: 40px;
+  height: 40px;
+  transition: all 0.2s ease-in-out;
+}
+
+.bookmark-btn:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.bookmark-btn.large {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+}
+
+/* Style untuk story item agar bisa diklik */
+.story-link-wrapper {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Info message (contoh di DetailStoryPage jika story tidak ditemukan) */
 .info-message {
   text-align: center;

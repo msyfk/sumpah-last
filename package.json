@@ -19,5 +19,13 @@
   "main": "eslint.config.js",
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msyfk/sumpah-last.git"
+  },
+  "bugs": {
+    "url": "https://github.com/msyfk/sumpah-last/issues"
+  },
+  "homepage": "https://github.com/msyfk/sumpah-last#readme"
 }

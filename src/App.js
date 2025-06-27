@@ -117,7 +117,7 @@ const renderApplication = () => {
 
   // Render page content (dynamic part)
   setTimeout(() => {
-    mainContent.removeChild(loadingIndicator);
+    // mainContent.removeChild(loadingIndicator);
 
     if (currentHash === "/") {
       renderHomePage(mainContent);
