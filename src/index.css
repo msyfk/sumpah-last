@@ -1,0 +1,662 @@
+/* src/index.css atau src/App.css */
+
+/* --- GLOBAL STYLING --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f6; /* Warna latar belakang lembut */
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+/* --- NAVBAR STYLING --- */
+.navbar {
+  background-color: #2c3e50; /* Warna gelap untuk navbar */
+  color: #ecf0f1;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky; /* Menjaga navbar tetap di atas */
+  top: 0;
+  z-index: 1000; /* Pastikan di atas elemen lain */
+}
+
+.navbar-brand a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 1.8em;
+  font-weight: 600;
+}
+
+.navbar-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 25px; /* Jarak antar item navigasi */
+}
+
+.navbar-links li {
+  display: inline-block;
+}
+
+.navbar-links a,
+.navbar-links button {
+  color: #ecf0f1;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.navbar-links a:hover,
+.navbar-links button:hover {
+  background-color: #34495e; /* Sedikit lebih gelap saat hover */
+  color: #ffffff;
+}
+
+/* src/index.css */
+.skip-link {
+  position: absolute; /* Tetap absolute agar tidak mengganggu layout */
+  left: -9999px; /* Pindahkan jauh ke kiri agar tidak terlihat */
+  top: auto; /* Pastikan top tidak diatur ke 0 atau nilai lain */
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0); /* Cara lama untuk menyembunyikan secara visual */
+  /* clip-path: inset(50%); */ /* Cara modern untuk menyembunyikan secara visual (alternatif yang lebih baik) */
+  white-space: nowrap; /* Mencegah teks terpotong */
+  border: 0;
+  padding: 0;
+  margin: -1px; /* Mengikuti convention untuk menyembunyikan elemen */
+  z-index: 9999; /* Pastikan di atas elemen lain saat muncul */
+
+  /* Gaya saat fokus */
+  background-color: #3498db;
+  color: white;
+  padding: 8px 15px;
+  text-decoration: none;
+  font-size: 1em;
+  font-weight: 500;
+  border-radius: 0 0 5px 5px;
+  transition: all 0.2s ease-in-out;
+}
+
+.skip-link:focus {
+  /* Saat difokuskan, tampilkan di tengah atas halaman */
+  position: fixed; /* Gunakan fixed agar selalu di viewport, bahkan saat scroll */
+  left: 50%; /* Pindahkan ke tengah horizontal */
+  top: 0; /* Tampilkan di bagian paling atas */
+  transform: translateX(-50%); /* Geser ke kiri setengah dari lebarnya sendiri untuk centering */
+  width: auto; /* Lebar otomatis sesuai konten */
+  height: auto; /* Tinggi otomatis sesuai konten */
+  overflow: visible; /* Buat terlihat */
+  clip: auto; /* Buat terlihat */
+  /* clip-path: none; */
+  text-align: center;
+  display: block; /* Pastikan mengambil ruang yang diperlukan */
+  margin: 0; /* Hapus margin negatif */
+}
+
+/* --- FORM CARD STYLING (General for Login, Register, Add Story) --- */
+/* Menggunakan .form-card yang sudah ada di RegisterPage & AddStoryPage */
+.form-card { /* Diganti dari .login-page, .register-page */
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  max-width: 500px; /* Lebar maksimal konsisten */
+  margin: 50px auto;
+  text-align: center;
+}
+
+.form-card h2 { /* Diganti dari .login-page h2, .register-page h2 */
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2em;
+  font-weight: 600;
+}
+
+.form-group { /* Diganti dari .login-page form div, .register-page form div */
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label { /* Diganti dari .login-page label, .register-page label */
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Input text, email, password, textarea */
+.form-card input[type="email"],
+.form-card input[type="password"],
+.form-card input[type="text"],
+.form-card textarea {
+  width: calc(100% - 24px); /* Kurangi padding + border */
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+  border-color: #3498db; /* Warna fokus */
+  outline: none;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-card textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Style khusus untuk input file agar terlihat lebih baik */
+.form-card input[type="file"] {
+  display: block;
+  width: calc(100% - 2px); /* Menyesuaikan agar tidak melebihi lebar parent */
+  padding: 10px 0; /* Padding vertikal saja */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  color: #666;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.form-card fieldset.form-group legend {
+  margin-bottom: 0px; /* Jarak bawah legend */
+}
+
+#camera-controls {
+  margin-top: 15px; /* Jarak atas untuk kontrol kamera */
+}
+
+/* --- BUTTON STYLING (General) --- */
+.btn-primary { /* Tombol utama, misalnya untuk submit form */
+  background-color: #28a745; /* Warna hijau untuk submit */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.btn-primary:hover {
+  background-color: #218838; /* Lebih gelap saat hover */
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary { /* Tombol sekunder, misalnya untuk "Buka Kamera" */
+  background-color: #3498db; /* Warna biru */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #217dbb;
+}
+
+.btn-danger { /* Tombol untuk aksi bahaya/hapus, misalnya "Stop Kamera" */
+  background-color: #dc3545; /* Merah */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.btn-info { /* Tombol informatif, misalnya "Hapus Lokasi" */
+  background-color: #6c757d; /* Abu-abu */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-info:hover {
+  background-color: #5a6268;
+}
+
+/* --- ERROR & SUCCESS MESSAGE STYLING --- */
+.error-message, .success-message {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 0.9em;
+  font-weight: 500;
+  text-align: center;
+}
+
+.error-message {
+  color: #a70000; /* Merah gelap */
+  background-color: #ffe0e0; /* Latar belakang merah muda */
+  border: 1px solid #e74c3c;
+}
+
+.success-message {
+  color: #155724; /* Hijau gelap */
+  background-color: #d4edda; /* Latar belakang hijau muda */
+  border: 1px solid #28a745;
+}
+
+
+/* --- LINK STYLING PADA FORM --- */
+.form-card p a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.form-card p a:hover {
+  color: #217dbb;
+  text-decoration: underline;
+}
+
+/* --- LOADING INDICATOR / SPINNER --- */
+.loading-indicator {
+  display: flex;
+  flex-direction: column; /* Ubah ke kolom agar teks di atas spinner */
+  justify-content: center;
+  align-items: center;
+  min-height: 200px; /* Tinggi minimum untuk loading page */
+  font-size: 1.2em;
+  color: #666;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  width: 40px; /* Ukuran spinner lebih besar */
+  height: 40px; /* Ukuran spinner lebih besar */
+  animation: spin 1s linear infinite;
+  margin-top: 15px; /* Jarak dari teks "Memuat..." */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- HOMEPAGE STYLING --- */
+.story-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    padding: 20px 30px;
+}
+
+/* .story-card (sekarang digunakan oleh StoryItem.jsx) */
+.story-item { /* Ganti .story-card menjadi .story-item untuk konsistensi */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex; /* Menggunakan flexbox untuk layout internal */
+    flex-direction: column;
+    height: 100%; /* Pastikan kartu mengisi tinggi grid item */
+}
+
+.story-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.story-item a { /* Gaya untuk link di dalam story item */
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.story-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.story-item .content { /* Konten teks di dalam story item */
+    padding: 20px;
+    flex-grow: 1; /* Agar mengisi ruang yang tersedia */
+    display: flex;
+    flex-direction: column;
+}
+
+.story-item .content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.story-item .content p {
+    color: #666;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+    flex-grow: 1; /* Memungkinkan deskripsi untuk mengisi ruang */
+    /* max-height: 4.5em; */ /* Batasi tinggi deskripsi, jika diinginkan */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.story-item .read-more { /* Jika Anda memiliki tombol 'Baca Selengkapnya' */
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: auto; /* Mendorong tombol ke bawah */
+}
+
+.story-item .read-more:hover {
+    background-color: #217dbb;
+}
+
+/* Homepage Heading */
+.homepage h2 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.2em;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+/* --- DETAIL STORY PAGE --- */
+.detail-story-card { /* Diganti dari .detail-story-page */
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin: 50px auto;
+    max-width: 800px;
+}
+
+.detail-story-card img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.detail-story-card h2 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.detail-story-card p {
+    color: #555;
+    font-size: 1.1em;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.detail-story-card .story-meta {
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.detail-story-card .story-meta .location {
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+/* Info message (contoh di DetailStoryPage jika story tidak ditemukan) */
+.info-message {
+  text-align: center;
+  margin-top: 30px;
+  color: #3498db;
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+/* Styling untuk peta di AddStoryPage */
+.add-story-page .leaflet-container {
+  z-index: 1; /* Pastikan peta tidak menimpa elemen lain */
+  height: 400px; /* Tinggi peta */
+}
+
+.leaflet-control-container {
+  z-index: 1001; /* Pastikan kontrol peta tetap di atas */
+}
+
+.leaflet-popup-pane,
+.leaflet-tooltip-pane {
+  z-index: 1002; /* Pastikan pop-up juga di atas kontrol */
+}
+
+fieldset {
+  border: none; /* Hilangkan garis tepi */
+  padding: 0; /* Hapus padding default fieldset jika ada */
+  margin: 0; /* Hapus margin default fieldset jika ada */
+}
+
+/* Sesuaikan legend agar terlihat seperti label biasa jika border fieldset dihilangkan */
+fieldset legend {
+  float: initial; /* Mengatur ulang float yang mungkin diterapkan browser */
+  width: auto; /* Mengatur ulang lebar */
+  padding: 0; /* Hapus padding default */
+  margin-bottom: 8px; /* Beri sedikit jarak di bawah legend */
+  font-weight: 500; /* Sesuaikan dengan gaya label Anda */
+  color: #555; /* Sesuaikan dengan gaya label Anda */
+  font-size: 1em; /* Sesuaikan ukuran font */
+}
+
+/* Clearfix untuk fieldset jika menggunakan float */
+fieldset::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Optional: Jika Anda ingin div dengan kelas form-group tetap memiliki margin-bottom */
+.form-card .form-group {
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+  }
+  .navbar-links {
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .navbar-links li {
+    margin: 5px 10px;
+  }
+  .story-list {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  .form-card, .detail-story-card {
+    padding: 30px;
+    margin: 30px 15px; /* Sedikit margin samping untuk layar kecil */
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+  .navbar-brand a {
+    font-size: 1.5em;
+  }
+  .navbar-links {
+    gap: 15px;
+  }
+  .form-card,
+  .detail-story-card {
+    padding: 20px;
+    margin: 20px 10px;
+  }
+  .form-card h2,
+  .detail-story-card h2 {
+    font-size: 1.8em;
+  }
+  .detail-story-card h2 {
+      font-size: 2em;
+  }
+  .form-card input[type="email"],
+  .form-card input[type="password"],
+  .form-card input[type="text"],
+  .form-card textarea {
+    width: calc(100% - 20px); /* Adjust for smaller padding */
+  }
+  .btn-primary, .btn-secondary, .btn-danger, .btn-info {
+    padding: 10px 20px;
+    font-size: 1em;
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-to-left {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Menggunakan 'root' sebagai fallback umum atau untuk elemen dasar */
+::view-transition-old(root) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards fade-in;
+}
+
+/* Contoh untuk elemen spesifik, seperti kartu cerita di halaman utama */
+/* Anda perlu menambahkan view-transition-name ke elemen individual di JSX */
+/* Untuk transisi yang lebih kompleks, Anda dapat menargetkan elemen tertentu.
+   Untuk geser halaman penuh, menerapkan ke :root biasanya sudah cukup. */
+
+/* Contoh: Jika Anda ingin efek geser untuk navigasi */
+::view-transition-old(main-content) { /* Mengasumsikan 'main-content' adalah nama div root Anda */
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards slide-out-to-left;
+}
+
+::view-transition-new(main-content) { /* Mengasumsikan 'main-content' adalah nama div root Anda */
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards slide-in-from-right;
+}
+
+/* Untuk transisi terbalik (misalnya, tombol kembali atau tautan spesifik) */
+/* Anda perlu menambahkan kelas atau atribut data secara programatis ke body/html untuk memicu animasi terbalik */
+/* Contoh: document.documentElement.classList.add('reverse-transition'); */
+
+.reverse-transition::view-transition-old(main-content) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards slide-out-to-right;
+}
+
+.reverse-transition::view-transition-new(main-content) {
+  animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards slide-in-from-left;
+}
+
+@keyframes slide-out-to-right {
+  from {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}

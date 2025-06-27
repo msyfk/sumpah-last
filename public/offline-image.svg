@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bg)" rx="10"/>
+  
+  <!-- Border -->
+  <rect x="5" y="5" width="390" height="290" fill="none" stroke="#dee2e6" stroke-width="2" rx="8"/>
+  
+  <!-- Offline Icon -->
+  <circle cx="200" cy="120" r="40" fill="#6c757d" opacity="0.3"/>
+  <path d="M180 100 L220 140 M220 100 L180 140" stroke="#6c757d" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Image placeholder icon -->
+  <rect x="170" y="90" width="60" height="60" fill="none" stroke="#6c757d" stroke-width="2" rx="5"/>
+  <circle cx="185" cy="110" r="8" fill="#6c757d" opacity="0.5"/>
+  <path d="M175 135 L190 125 L200 130 L215 120 L225 125" stroke="#6c757d" stroke-width="2" fill="none"/>
+  
+  <!-- Text -->
+  <text x="200" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6c757d">
+    Gambar tidak tersedia offline
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="200" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#adb5bd">
+    Koneksi internet diperlukan untuk memuat gambar
+  </text>
+</svg>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB Test - Story App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        
+        .test-result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .test-result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .test-result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        button.danger {
+            background: #e74c3c;
+        }
+        
+        button.danger:hover {
+            background: #c0392b;
+        }
+        
+        .story-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .story-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .story-item h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+        
+        .story-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 IndexedDB Test Suite - Story App</h1>
+        <p>Test comprehensive IndexedDB functionality for offline storage</p>
+        
+        <div class="test-section">
+            <h3>📊 Database Status</h3>
+            <div id="db-status" class="test-result info">Checking IndexedDB support...</div>
+            <div class="stats" id="stats-container">
+                <!-- Stats will be populated here -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 Test Controls</h3>
+            <button onclick="runAllTests()">🚀 Run All Tests</button>
+            <button onclick="testBasicOperations()">📝 Test Basic Operations</button>
+            <button onclick="testBulkOperations()">📦 Test Bulk Operations</button>
+            <button onclick="testErrorHandling()">⚠️ Test Error Handling</button>
+            <button onclick="loadSampleData()">📋 Load Sample Data</button>
+            <button onclick="clearAllData()" class="danger">🗑️ Clear All Data</button>
+            <button onclick="exportData()">📤 Export Data</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Test Results</h3>
+            <div id="test-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📚 Stored Stories</h3>
+            <button onclick="refreshStoriesList()">🔄 Refresh List</button>
+            <div id="stories-list" class="story-list"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📝 Console Log</h3>
+            <button onclick="clearLog()">🧹 Clear Log</button>
+            <div id="console-log" class="log"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { indexedDBService } from './src/services/indexedDBService.js';
+        
+        // Make services available globally for testing
+        window.indexedDBService = indexedDBService;
+        
+        let testResults = [];
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('console-log');
+            const logMessage = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logElement.textContent += logMessage;
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(message);
+        }
+        
+        // Test result display
+        function addTestResult(testName, success, message, details = null) {
+            testResults.push({ testName, success, message, details, timestamp: new Date() });
+            
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${success ? 'success' : 'error'}`;
+            resultDiv.innerHTML = `
+                <strong>${success ? '✅' : '❌'} ${testName}</strong><br>
+                ${message}
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            resultsContainer.appendChild(resultDiv);
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+        }
+        
+        // Update database status
+        async function updateDatabaseStatus() {
+            const statusElement = document.getElementById('db-status');
+            
+            try {
+                const isSupported = indexedDBService.constructor.isSupported();
+                if (!isSupported) {
+                    statusElement.className = 'test-result error';
+                    statusElement.textContent = '❌ IndexedDB is not supported in this browser';
+                    return;
+                }
+                
+                await indexedDBService.init();
+                const stats = await indexedDBService.getStorageStats();
+                
+                statusElement.className = 'test-result success';
+                statusElement.textContent = '✅ IndexedDB is supported and initialized';
+                
+                // Update stats
+                const statsContainer = document.getElementById('stats-container');
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.totalStories}</div>
+                        <div class="stat-label">Total Stories</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatBytes(stats.estimatedSize)}</div>
+                        <div class="stat-label">Storage Used</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.newestCache ? formatDate(stats.newestCache) : 'N/A'}</div>
+                        <div class="stat-label">Last Updated</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                statusElement.className = 'test-result error';
+                statusElement.textContent = `❌ Error initializing IndexedDB: ${error.message}`;
+                log(`Database initialization error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Utility functions
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleString('id-ID');
+        }
+        
+        // Generate sample story data
+        function generateSampleStory(index) {
+            return {
+                id: `test-story-${index}`,
+                name: `Test Story ${index}`,
+                description: `This is a test story number ${index}. It contains sample content for testing IndexedDB functionality.`,
+                photoUrl: `https://picsum.photos/400/300?random=${index}`,
+                createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                lat: -6.2 + (Math.random() - 0.5) * 0.1,
+                lon: 106.8 + (Math.random() - 0.5) * 0.1
+            };
+        }
+        
+        // Test functions
+        window.testBasicOperations = async function() {
+            log('Starting basic operations test...');
+            
+            try {
+                // Test storing a single story
+                const testStory = generateSampleStory(999);
+                await indexedDBService.storeStory(testStory);
+                addTestResult('Store Single Story', true, 'Successfully stored a single story');
+                
+                // Test retrieving the story
+                const retrievedStory = await indexedDBService.getStory(testStory.id);
+                if (retrievedStory && retrievedStory.id === testStory.id) {
+                    addTestResult('Retrieve Single Story', true, 'Successfully retrieved the stored story');
+                } else {
+                    addTestResult('Retrieve Single Story', false, 'Failed to retrieve the stored story');
+                }
+                
+                // Test deleting the story
+                await indexedDBService.deleteStory(testStory.id);
+                const deletedStory = await indexedDBService.getStory(testStory.id);
+                if (!deletedStory) {
+                    addTestResult('Delete Single Story', true, 'Successfully deleted the story');
+                } else {
+                    addTestResult('Delete Single Story', false, 'Failed to delete the story');
+                }
+                
+            } catch (error) {
+                addTestResult('Basic Operations', false, `Error during basic operations: ${error.message}`);
+                log(`Basic operations error: ${error.message}`, 'error');
+            }
+            
+            await updateDatabaseStatus();
+        };
+        
+        window.testBulkOperations = async function() {
+            log('Starting bulk operations test...');
+            
+            try {
+                // Generate multiple test stories
+                const testStories = Array.from({ length: 10 }, (_, i) => generateSampleStory(i + 100));
+                
+                // Test bulk storage
+                const startTime = performance.now();
+                await indexedDBService.storeStories(testStories);
+                const endTime = performance.now();
+                
+                addTestResult('Bulk Store Stories', true, 
+                    `Successfully stored ${testStories.length} stories`, 
+                    `Time taken: ${(endTime - startTime).toFixed(2)}ms`);
+                
+                // Test bulk retrieval
+                const retrievedStories = await indexedDBService.getAllStories();
+                const testStoriesInDb = retrievedStories.filter(story => 
+                    story.id.startsWith('test-story-1'));
+                
+                if (testStoriesInDb.length >= testStories.length) {
+                    addTestResult('Bulk Retrieve Stories', true, 
+                        `Successfully retrieved ${testStoriesInDb.length} test stories`);
+                } else {
+                    addTestResult('Bulk Retrieve Stories', false, 
+                        `Expected ${testStories.length} stories, got ${testStoriesInDb.length}`);
+                }
+                
+            } catch (error) {
+                addTestResult('Bulk Operations', false, `Error during bulk operations: ${error.message}`);
+                log(`Bulk operations error: ${error.message}`, 'error');
+            }
+            
+            await updateDatabaseStatus();
+            await refreshStoriesList();
+        };
+        
+        window.testErrorHandling = async function() {
+            log('Starting error handling test...');
+            
+            try {
+                // Test storing invalid data
+                try {
+                    await indexedDBService.storeStory(null);
+                    addTestResult('Error Handling - Null Story', false, 'Should have thrown an error for null story');
+                } catch (error) {
+                    addTestResult('Error Handling - Null Story', true, 'Correctly handled null story error');
+                }
+                
+                // Test retrieving non-existent story
+                const nonExistentStory = await indexedDBService.getStory('non-existent-id');
+                if (nonExistentStory === null) {
+                    addTestResult('Error Handling - Non-existent Story', true, 'Correctly returned null for non-existent story');
+                } else {
+                    addTestResult('Error Handling - Non-existent Story', false, 'Should have returned null for non-existent story');
+                }
+                
+                // Test deleting non-existent story
+                try {
+                    await indexedDBService.deleteStory('non-existent-id');
+                    addTestResult('Error Handling - Delete Non-existent', true, 'Gracefully handled deletion of non-existent story');
+                } catch (error) {
+                    addTestResult('Error Handling - Delete Non-existent', false, `Unexpected error: ${error.message}`);
+                }
+                
+            } catch (error) {
+                addTestResult('Error Handling', false, `Unexpected error during error handling test: ${error.message}`);
+                log(`Error handling test error: ${error.message}`, 'error');
+            }
+        };
+        
+        window.loadSampleData = async function() {
+            log('Loading sample data...');
+            
+            try {
+                const sampleStories = Array.from({ length: 5 }, (_, i) => generateSampleStory(i + 1));
+                await indexedDBService.storeStories(sampleStories);
+                
+                addTestResult('Load Sample Data', true, `Loaded ${sampleStories.length} sample stories`);
+                log(`Loaded ${sampleStories.length} sample stories`);
+                
+                await updateDatabaseStatus();
+                await refreshStoriesList();
+                
+            } catch (error) {
+                addTestResult('Load Sample Data', false, `Error loading sample data: ${error.message}`);
+                log(`Sample data loading error: ${error.message}`, 'error');
+            }
+        };
+        
+        window.clearAllData = async function() {
+            if (!confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                return;
+            }
+            
+            log('Clearing all data...');
+            
+            try {
+                await indexedDBService.clearAllStories();
+                addTestResult('Clear All Data', true, 'Successfully cleared all stories');
+                log('All data cleared');
+                
+                await updateDatabaseStatus();
+                await refreshStoriesList();
+                
+            } catch (error) {
+                addTestResult('Clear All Data', false, `Error clearing data: ${error.message}`);
+                log(`Data clearing error: ${error.message}`, 'error');
+            }
+        };
+        
+        window.exportData = async function() {
+            log('Exporting data...');
+            
+            try {
+                const stories = await indexedDBService.getAllStories();
+                const stats = await indexedDBService.getStorageStats();
+                
+                const exportData = {
+                    exportDate: new Date().toISOString(),
+                    stats: stats,
+                    stories: stories,
+                    testResults: testResults
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `indexeddb-test-export-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                
+                addTestResult('Export Data', true, `Exported ${stories.length} stories and ${testResults.length} test results`);
+                log(`Data exported successfully`);
+                
+            } catch (error) {
+                addTestResult('Export Data', false, `Error exporting data: ${error.message}`);
+                log(`Data export error: ${error.message}`, 'error');
+            }
+        };
+        
+        window.refreshStoriesList = async function() {
+            log('Refreshing stories list...');
+            
+            try {
+                const stories = await indexedDBService.getAllStories();
+                const storiesListElement = document.getElementById('stories-list');
+                
+                if (stories.length === 0) {
+                    storiesListElement.innerHTML = '<p style="text-align: center; color: #666;">No stories found</p>';
+                    return;
+                }
+                
+                storiesListElement.innerHTML = stories.map(story => `
+                    <div class="story-item">
+                        <h4>${story.name}</h4>
+                        <p><strong>ID:</strong> ${story.id}</p>
+                        <p><strong>Description:</strong> ${story.description.substring(0, 100)}${story.description.length > 100 ? '...' : ''}</p>
+                        <p><strong>Created:</strong> ${formatDate(story.createdAt)}</p>
+                        <p><strong>Cached:</strong> ${formatDate(story.cachedAt)}</p>
+                        ${story.lat && story.lon ? `<p><strong>Location:</strong> ${story.lat.toFixed(4)}, ${story.lon.toFixed(4)}</p>` : ''}
+                    </div>
+                `).join('');
+                
+                log(`Displayed ${stories.length} stories`);
+                
+            } catch (error) {
+                document.getElementById('stories-list').innerHTML = `<p style="color: red;">Error loading stories: ${error.message}</p>`;
+                log(`Stories list refresh error: ${error.message}`, 'error');
+            }
+        };
+        
+        window.runAllTests = async function() {
+            log('Running all tests...');
+            
+            // Clear previous results
+            document.getElementById('test-results').innerHTML = '';
+            testResults = [];
+            
+            await testBasicOperations();
+            await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between tests
+            
+            await testBulkOperations();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testErrorHandling();
+            
+            const successCount = testResults.filter(r => r.success).length;
+            const totalCount = testResults.length;
+            
+            log(`All tests completed: ${successCount}/${totalCount} passed`);
+            
+            if (successCount === totalCount) {
+                addTestResult('All Tests', true, `All ${totalCount} tests passed successfully! 🎉`);
+            } else {
+                addTestResult('All Tests', false, `${totalCount - successCount} out of ${totalCount} tests failed`);
+            }
+        };
+        
+        window.clearLog = function() {
+            document.getElementById('console-log').textContent = '';
+        };
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('IndexedDB Test Suite initialized');
+            await updateDatabaseStatus();
+            await refreshStoriesList();
+        });
+    </script>
+</body>
+</html>

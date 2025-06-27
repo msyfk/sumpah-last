@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test - Story App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>PWA Test Suite - Story App</h1>
+    
+    <div class="test-section">
+        <h2>1. Service Worker Test</h2>
+        <button onclick="testServiceWorker()">Test Service Worker</button>
+        <div id="sw-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Manifest Test</h2>
+        <button onclick="testManifest()">Test Manifest</button>
+        <div id="manifest-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Cache Test</h2>
+        <button onclick="testCache()">Test Cache</button>
+        <div id="cache-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Install Prompt Test</h2>
+        <button onclick="testInstallPrompt()">Test Install Prompt</button>
+        <div id="install-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Offline Test</h2>
+        <button onclick="testOffline()">Test Offline Capability</button>
+        <div id="offline-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Icons Test</h2>
+        <button onclick="testIcons()">Test Icons</button>
+        <div id="icons-result"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+
+        async function testServiceWorker() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    if (registrations.length > 0) {
+                        const sw = registrations[0];
+                        showResult('sw-result', 
+                            `✅ Service Worker registered successfully!<br>
+                            Scope: ${sw.scope}<br>
+                            State: ${sw.active ? sw.active.state : 'No active worker'}`, 
+                            'success'
+                        );
+                    } else {
+                        showResult('sw-result', '❌ No Service Worker found', 'error');
+                    }
+                } else {
+                    showResult('sw-result', '❌ Service Worker not supported', 'error');
+                }
+            } catch (error) {
+                showResult('sw-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testManifest() {
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    showResult('manifest-result', 
+                        `✅ Manifest loaded successfully!<br>
+                        Name: ${manifest.name}<br>
+                        Display: ${manifest.display}<br>
+                        Icons: ${manifest.icons.length} icons found<br>
+                        Theme Color: ${manifest.theme_color}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('manifest-result', '❌ Manifest not found', 'error');
+                }
+            } catch (error) {
+                showResult('manifest-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCache() {
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    if (cacheNames.length > 0) {
+                        let cacheInfo = '';
+                        for (const cacheName of cacheNames) {
+                            const cache = await caches.open(cacheName);
+                            const keys = await cache.keys();
+                            cacheInfo += `${cacheName}: ${keys.length} items<br>`;
+                        }
+                        showResult('cache-result', 
+                            `✅ Cache working!<br>
+                            Found ${cacheNames.length} caches:<br>
+                            ${cacheInfo}`, 
+                            'success'
+                        );
+                    } else {
+                        showResult('cache-result', '⚠️ No caches found yet', 'warning');
+                    }
+                } else {
+                    showResult('cache-result', '❌ Cache API not supported', 'error');
+                }
+            } catch (error) {
+                showResult('cache-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testInstallPrompt() {
+            let hasPrompt = false;
+            
+            window.addEventListener('beforeinstallprompt', (e) => {
+                hasPrompt = true;
+                showResult('install-result', 
+                    '✅ Install prompt available! App is installable.', 
+                    'success'
+                );
+            });
+
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                showResult('install-result', 
+                    '✅ App is already installed and running in standalone mode!', 
+                    'success'
+                );
+            } else {
+                setTimeout(() => {
+                    if (!hasPrompt) {
+                        showResult('install-result', 
+                            '⚠️ Install prompt not triggered yet. This might be normal if PWA criteria are not fully met or app is already installed.', 
+                            'warning'
+                        );
+                    }
+                }, 2000);
+            }
+        }
+
+        async function testOffline() {
+            try {
+                // Test if offline page exists
+                const offlineResponse = await fetch('/offline.html');
+                const offlineImageResponse = await fetch('/offline-image.svg');
+                
+                let results = [];
+                
+                if (offlineResponse.ok) {
+                    results.push('✅ Offline page available');
+                } else {
+                    results.push('❌ Offline page not found');
+                }
+                
+                if (offlineImageResponse.ok) {
+                    results.push('✅ Offline image available');
+                } else {
+                    results.push('❌ Offline image not found');
+                }
+                
+                results.push(`📶 Online status: ${navigator.onLine ? 'Online' : 'Offline'}`);
+                
+                showResult('offline-result', results.join('<br>'), 'success');
+            } catch (error) {
+                showResult('offline-result', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testIcons() {
+            const iconSizes = ['72', '96', '192', '512'];
+            let results = [];
+            
+            for (const size of iconSizes) {
+                try {
+                    const response = await fetch(`/icon-${size}.svg`);
+                    if (response.ok) {
+                        results.push(`✅ Icon ${size}x${size} available`);
+                    } else {
+                        results.push(`❌ Icon ${size}x${size} not found`);
+                    }
+                } catch (error) {
+                    results.push(`❌ Icon ${size}x${size} error: ${error.message}`);
+                }
+            }
+            
+            showResult('icons-result', results.join('<br>'), 'success');
+        }
+
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testServiceWorker();
+                testManifest();
+                testCache();
+                testIcons();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
