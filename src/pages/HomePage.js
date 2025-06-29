@@ -37,7 +37,6 @@ export const renderHomePage = async (parentElement) => {
     displayStories: (stories) => {
       loadingIndicator.remove();
 
-      // Update offline indicator based on story source
       const storyModel = new StoryModel();
       const isUsingCache = storyModel.isUsingCache();
       offlineIndicator.setUsingCache(isUsingCache);
@@ -45,9 +44,9 @@ export const renderHomePage = async (parentElement) => {
 
       // Show connection toast if using cache
       if (isUsingCache && stories.length > 0) {
-        showConnectionToast("Loading stories from cache", "warning");
+        showConnectionToast("Menampilkan cerita dari cache", "info");
       } else if (!isUsingCache && stories.length > 0) {
-        showConnectionToast("Stories loaded from server", "success");
+        showConnectionToast("Cerita berhasil dimuat dari server", "success");
       }
 
       // Only create map if there are stories with location
